@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpecGrep</title>
+  <script>
+    try {
+      var specgrepTheme = localStorage.getItem('specgrep_theme');
+      if (specgrepTheme === 'light' || specgrepTheme === 'dark') document.documentElement.dataset.theme = specgrepTheme;
+    } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/oat.min.css') }}">
+  <script src="{{ url_for('static', filename='vendor/oat.min.js') }}" defer></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{{ 'index' if not query else '' }}">
+  <header class="site-header">
+    <div class="site-header-right">
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch color theme"></button>
+      <a href="https://github.com/yukthaareddyy" class="site-header-link" target="_blank" rel="noopener">yuktha@github</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <header>
+        <h1><a href="/">SpecGrep</a></h1>
+        <p class="muted">Full-text search across IETF RFCs, WHATWG/W3C specs, and ECMA-262/402.</p>
+      </header>
+
+      <form action="/" method="get">
+        <fieldset class="group">
+          <input type="text" name="q" value="{{ query }}" placeholder="e.g. keepalive, WeakRef, Content-Security-Policy" autofocus>
+          <button type="submit">Search</button>
+        </fieldset>
+
+        <div class="sources">
+          {% for s in all_sources %}
+            <label>
+              <input type="checkbox" name="source" value="{{ s }}"
+                     {% if s in selected_sources %}checked{% endif %}
+                     onchange="this.form.submit()">
+              {{ s|upper }}
+            </label>
+          {% endfor %}
+        </div>
+      </form>
+    </div>
+
+    {% if query %}
+      <div class="container results-container">
+        <p class="muted">
+          <small>
+            {{ results|length }} result{{ '' if results|length == 1 else 's' }} for &ldquo;{{ query }}&rdquo;
+            {% if results %}&mdash; click a result to jump straight to that section{% endif %}
+          </small>
+        </p>
+
+        <ul class="results">
+          {% for r in results %}
+            <li>
+              <a href="{{ r.doc_url }}{{ r.anchor }}">{{ r.doc_title }} — {{ r.heading }}</a>
+              <span class="tag">{{ r.source|upper }}</span>
+              <p class="snippet">{{ r.snippet }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </main>
+
+  <script>
+    (function () {
+      var ICON = {
+        sun: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        moon: '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M13.5 9.5A6 6 0 1 1 6.5 2.5a5 5 0 0 0 7 7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>'
+      };
+      var KEY = 'specgrep_theme';
+      var root = document.documentElement;
+      var btn = document.getElementById('theme-toggle');
+
+      function storedTheme() {
+        try {
+          var t = localStorage.getItem(KEY);
+          return t === 'light' || t === 'dark' ? t : null;
+        } catch (e) {
+          return null;
+        }
+      }
+      function effectiveTheme() {
+        return storedTheme() || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      }
+      function applyTheme() {
+        // Only set data-theme when the user has explicitly chosen — leaving it
+        // unset keeps oat's default `color-scheme: light dark`, which live-
+        // follows OS theme changes instead of freezing at whatever it was on load.
+        var stored = storedTheme();
+        if (stored) root.dataset.theme = stored; else delete root.dataset.theme;
+        btn.innerHTML = effectiveTheme() === 'dark' ? ICON.sun : ICON.moon;
+      }
+
+      applyTheme();
+      btn.addEventListener('click', function () {
+        try {
+          localStorage.setItem(KEY, effectiveTheme() === 'dark' ? 'light' : 'dark');
+        } catch (e) {
+          // Storage unavailable (private browsing, etc.) — toggle still
+          // works for this page load, just won't persist.
+        }
+        applyTheme();
+      });
+    })();
+  </script>
+</body>
+</html>

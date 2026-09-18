@@ -1,0 +1,108 @@
+/* Small page-specific additions on top of oat (vendor/oat.min.css),
+   which handles all form/button/layout styling.
+
+   Corner radius is sharpened to match pkg.bot/dns.toys (inspected
+   directly). Accent color, font, and the header/icon-btn/theme-toggle
+   pattern below are copied from whensday.yuktha.workers.dev's own
+   app.css/app.js — same author's own established look, reused as-is
+   rather than reinvented. */
+
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --primary: light-dark(#3f6e8c, #8db3d1);
+  --ring: var(--primary);
+  --radius-small: 2px;
+  --radius-medium: 3px;
+  --radius-full: 3px;
+  /* Narrower content column — same 720px both pkg.bot's index page and
+     whensday's own --app-max use, instead of oat's default 1280px. */
+  --container-max: 720px;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+/* Results get a wider column than the search bar/header — long headings
+   and snippets read better with the extra room. */
+.results-container { max-width: 900px; margin-top: var(--space-8); }
+
+/* Center the empty homepage (logo + search box) in the viewport, like
+   pkg.bot's body.index; once there's a query, fall back to normal flow. */
+body.index {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+body.index main {
+  display: flex;
+  flex: 1;
+}
+body.index .container {
+  margin: auto;
+}
+
+.site-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: var(--space-4) var(--container-pad) 0;
+}
+.site-header-right { display: flex; align-items: center; gap: var(--space-3); }
+.site-header-link {
+  font-size: var(--text-8);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+.site-header-link:hover { color: var(--primary); text-decoration: underline; }
+
+.icon-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  border-radius: var(--radius-medium);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  background-color: var(--card);
+  box-shadow: var(--shadow-small);
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.icon-btn:hover { background-color: var(--accent); color: var(--foreground); box-shadow: var(--shadow-medium); }
+#theme-toggle svg { display: block; }
+
+main header { text-align: center; margin-bottom: var(--space-6); }
+.muted { color: var(--muted-foreground); }
+
+/* One step up oat's type scale (--text-6, 1rem) from its default. */
+fieldset.group input, fieldset.group button { font-size: var(--text-5); }
+
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+  font-size: var(--text-7);
+  color: var(--muted-foreground);
+}
+.sources label { display: flex; align-items: center; gap: var(--space-1); cursor: pointer; }
+
+.results { list-style: none; padding: 0; }
+.results li { padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
+.results li:last-child { border-bottom: none; }
+.snippet { color: var(--muted-foreground); margin: var(--space-2) 0 0; }
+
+.tag {
+  font-size: var(--text-8);
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  padding: 0 var(--space-2);
+  margin-left: var(--space-2);
+}
