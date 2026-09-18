@@ -2,7 +2,7 @@
 
 Full-text search across IETF RFCs, WHATWG/W3C/WICG specs, and ECMA-262/402 — type a keyword, jump straight to the matching section on the official spec page.
 
-No more digging through a 40-section RFC or the ECMAScript spec by hand: SpecGrep pre-indexes the sections of these documents and lets you search across all of them (or filter to just one source) with instant, ranked results and highlighted snippets.
+SpecGrep pre-indexes the sections of these documents and lets you search across all of them (or filter to just one source) with instant, ranked results and highlighted snippets.
 
 ## Sources
 
